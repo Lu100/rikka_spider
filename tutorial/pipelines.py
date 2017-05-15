@@ -5,7 +5,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
-from scrapy.exceptions import DropItem
+import tutorial.persistence
 
 
 class TutorialPipeline(object):
@@ -16,7 +16,6 @@ class TutorialPipeline(object):
 class AcfunPipeline(object):
     def __init__(self):
         self.file = open("E:/article.json", "w", encoding="UTF-8")
-        self.id_seed = set()
 
     def open_spider(self, spider):
         pass
@@ -25,10 +24,11 @@ class AcfunPipeline(object):
         self.file.close()
 
     def process_item(self, item, spider):
-        if item["author"] in self.id_seed:
-            raise DropItem("duplicate article_id %s" % item["author"])
-        else:
-            line = json.dumps(dict(item), ensure_ascii=False) + "\n"
-            self.file.write(line)
-            self.id_seed.add(item["author"])
+        line = json.dumps(dict(item), ensure_ascii=False) + "\n"
+        self.file.write(line)
         return item
+
+
+class SQLitePipeLine(object):
+    def process_item(self, item, spider):
+        tutorial.persistence.insert_acfun_item(item)

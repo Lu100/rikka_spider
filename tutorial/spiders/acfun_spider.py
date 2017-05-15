@@ -23,6 +23,7 @@ class AcfunSpiderSpider(scrapy.Spider):
         bs = BeautifulSoup(response.body, features="lxml")
         for div in bs.find(id="block-content-article").find_all("div", class_="item"):
             item = AcfunArticleItem()
+            # 想要获取时间
             item["publish_date"] = div.find("a", class_="title").get("title")
             item["hint_comment"] = div.find("a", class_="hint-comm-article").get("title")
             item["title"] = div.find("a", class_="title").string
